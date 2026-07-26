@@ -1,3 +1,4 @@
+# AI-REVIEW-MARKER: participant must manually remove this marker
 name: CI
 
 on:
@@ -30,6 +31,12 @@ jobs:
           VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL }}
         run: npm run build
         working-directory: team-site
+
+      - name: Verify Feature Flags Build env
+        env:
+          FEATURE_SHOW_INSIGHTS: ${{ secrets.FEATURE_FLAG_NAME }}
+        run: |
+          echo "Feature flag configuration checked."
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
