@@ -12,7 +12,8 @@
   "dependencies": {
     "lucide-react": "^1.23.0",
     "react": "^19.2.7",
-    "react-dom": "^19.2.7"
+    "react-dom": "^19.2.7",
+    "@sentry/react": "^8.0.0"
   },
   "devDependencies": {
     "@types/react": "^19.2.17",
