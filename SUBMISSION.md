@@ -67,7 +67,7 @@ Complete this file on `main` as tasks are completed. Do not paste secrets, priva
 ### Release 03:00
 
 - [ ] T21 - Least-Privilege And Concurrency (20 pts, 17 auto, 3 judge)
-- [ ] T22 - Compose Runtime Service (40 pts, 30 auto, 10 judge)
+- [x] T22 - Compose Runtime Service (40 pts, 30 auto, 10 judge)
 - [ ] T23 - Release Evidence Manifest (30 pts, 25 auto, 5 judge)
 - [ ] T24 - Cloudflare Turnstile Protection (40 pts, 30 auto, 10 judge)
 
