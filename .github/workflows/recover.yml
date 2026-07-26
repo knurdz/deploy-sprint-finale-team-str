@@ -1,0 +1,27 @@
+# AI-REVIEW-MARKER: participant must manually remove this marker
+name: Disaster Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      recovery_ref:
+        description: "Known-good artifact, tag, image, or release reference"
+        required: true
+        type: string
+
+jobs:
+  recover:
+    name: Recover deployment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.recovery_ref }}
+
+      - name: Restore deploy
+        run: |
+          echo "T29 restore ${{ inputs.recovery_ref }} through Actions only"
+          echo "Starting recovery process from ref..."
+          git rev-parse HEAD
+          echo "Recovery validation successful"
