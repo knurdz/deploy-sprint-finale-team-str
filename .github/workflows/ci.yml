@@ -39,6 +39,7 @@ jobs:
 
       - name: Create health endpoint
         run: |
+          rm -f team-site/dist/health
           mkdir -p team-site/dist/health
           echo "ok" > team-site/dist/health/index.html
 
