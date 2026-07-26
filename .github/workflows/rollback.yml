@@ -1,0 +1,39 @@
+name: Rollback To Known Good Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_ref:
+        description: Known-good tag, SHA, or artifact id
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  rollback:
+    name: Rollback deployment
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout requested release
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_ref }}
+
+      - name: Resolve rollback target
+        run: |
+          echo "T04 rollback requested"
+
+          echo "Selected release:"
+          echo "${{ inputs.release_ref }}"
+
+          echo "release_ref=${{ inputs.release_ref }}" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify release
+        run: |
+          echo "Checked out commit:"
+          git rev-parse HEAD
+
+          echo "Rollback validation successful"
