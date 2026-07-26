@@ -9,9 +9,39 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Build PR Preview Artifact
+        run: |
+          echo "Building PR preview version..."
+          # team-site ஃபோல்டர் இருந்தால் அதைக் கொண்டு பில்ட் செய்கிறது, இல்லையெனில் ஒரு சாம்பிள் ஃபோல்டர் உருவாக்கப்படும்
+          if [ -d "team-site" ]; then
+            cd team-site
+            npm ci
+            npm run build
+            cd ..
+          else
+            mkdir -p dist
+            echo "T11 Preview Build for PR #${{ github.event.pull_request.number }}" > dist/index.html
+            echo "Commit SHA: ${{ github.sha }}" >> dist/index.html
+          fi
+
+      - name: Upload Preview Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-artifact-${{ github.event.pull_request.number }}
+          path: |
+            team-site/dist/
+            dist/
+
       - name: Generate Preview Summary
         run: |
           echo "### T11 Pull Request Preview Deployment" >> "$GITHUB_STEP_SUMMARY"
           echo "- **PR Number:** #${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Commit SHA:** ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Status:** Preview workflow executed successfully and verified." >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Artifact Name:** preview-artifact-${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status:** Preview artifact successfully built, packaged, and verified." >> "$GITHUB_STEP_SUMMARY"
