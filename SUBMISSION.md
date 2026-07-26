@@ -81,7 +81,7 @@ Complete this file on `main` as tasks are completed. Do not paste secrets, priva
 
 - [ ] T28 - Race-Safe Idempotent Deploy (40 pts, 30 auto, 10 judge)
 - [ ] T29 - Disaster Recovery From Actions Only (40 pts, 30 auto, 10 judge)
-- [ ] T30 - Sentry Monitoring Release (40 pts, 30 auto, 10 judge)
+- [x] T30 - Sentry Monitoring Release (40 pts, 30 auto, 10 judge)
 
 ## Notes For Organizers
 
