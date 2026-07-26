@@ -4,8 +4,8 @@ Complete this file on `main` as tasks are completed. Do not paste secrets, priva
 
 ## Team
 
-- Team name:
-- Team members:
+- Team name: STR
+- Team members: T.Kirushanth R.Yathavi T.Harivishnu
 - Live IP URL:
 - Assigned domain URL:
 - Repository URL:
@@ -36,7 +36,7 @@ Use this section for short public notes and links. Full task instructions and ch
 | T04 |  |  |  |
 | T05 |  |  |  |
 | T06 |  |  |  |
-| T07 |  |  |  |
+| T07 | [T07] OpenWeather API Widget | `/api/weather` | OpenWeather widget endpoint created using server-side process.env.OPENWEATHER_API_KEY. Key is hidden and keyExposed is false. |
 | T08 |  |  |  |
 | T09 |  |  |  |
 | T10 |  |  |  |
