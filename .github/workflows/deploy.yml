@@ -1,3 +1,4 @@
+# AI-REVIEW-MARKER: participant must manually remove this marker
 name: Request Organizer Deploy
 
 on:
@@ -105,3 +106,43 @@ jobs:
             --data @payload.json
 
           echo "Requested organizer deployment for ${TEAM_REPO}@${TEAM_SHA}."
+
+  smoke-test:
+    name: Run Smoke Tests
+    needs: request-deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Run post-deploy smoke tests
+        env:
+          PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
+          PUBLIC_URI: ${{ secrets.PUBLIC_URL }}
+        run: |
+          set -euo pipefail
+          base_url="${PUBLIC_URL:-${PUBLIC_URI:?PUBLIC_URL or PUBLIC_URI required}}"
+          
+          echo "Target URL: $base_url"
+          
+          # Poll the main URL to wait for the deployment to finish
+          echo "Waiting for service to be online..."
+          for i in {1..30}; do
+            if curl --fail --silent "$base_url/status" > /dev/null; then
+              echo "Service is online!"
+              break
+            fi
+            echo "Not online yet, retrying in 5 seconds (attempt $i/30)..."
+            sleep 5
+          done
+          
+          echo "Checking root URL..."
+          curl --fail -L "$base_url/"
+          
+          echo "Checking /health URL..."
+          curl --fail -L "$base_url/health"
+          
+          echo "Checking /status URL..."
+          curl --fail -L "$base_url/status"
+          
+          echo "T19 smoke tests passed"
