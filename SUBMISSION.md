@@ -62,7 +62,7 @@ Complete this file on `main` as tasks are completed. Do not paste secrets, priva
 
 - [ ] T18 - Containerized VPS Deploy (20 pts, 17 auto, 3 judge)
 - [ ] T19 - Post-Deploy Smoke Tests (30 pts, 25 auto, 5 judge)
-- [ ] T20 - Google OAuth Login (40 pts, 28 auto, 12 judge)
+- [x] T20 - Google OAuth Login (40 pts, 28 auto, 12 judge)
 
 ### Release 03:00
 
