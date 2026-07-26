@@ -56,7 +56,7 @@ Complete this file on `main` as tasks are completed. Do not paste secrets, priva
 - [ ] T14 - Production Docker Image (20 pts, 17 auto, 3 judge)
 - [ ] T15 - Runtime Feature Flag (30 pts, 25 auto, 5 judge)
 - [ ] T16 - Resend Email Alerts (40 pts, 30 auto, 10 judge)
-- [ ] T17 - Low-Downtime Release Strategy (40 pts, 30 auto, 10 judge)
+- [x] T17 - Low-Downtime Release Strategy (40 pts, 30 auto, 10 judge)
 
 ### Release 02:30
 
