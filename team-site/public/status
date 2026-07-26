@@ -1,7 +1,5 @@
 Team: str
-Task: T02
-Domain: str.deploysprint-finals.knurdz.org
-domain.connected=true
-https.enabled=true
-DNS verified=true
-
+Task: T05
+PUBLIC_URL configured: true
+Secrets redacted: true
+Config source: GitHub Secrets
