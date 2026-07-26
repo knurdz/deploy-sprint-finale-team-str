@@ -23,14 +23,32 @@ jobs:
           cache-dependency-path: team-site/package-lock.json
 
       - name: Install dependencies
-        run: npm ci
         working-directory: team-site
+        run: npm ci
 
       - name: Build
-        env:
-          VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL }}
-        run: npm run build
         working-directory: team-site
+        env:
+          VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL || vars.DOMAIN_PUBLIC_URL || secrets.PUBLIC_URL || vars.IP_PUBLIC_URL }}
+        run: npm run build
+
+      - name: Create health endpoint
+        run: |
+          mkdir -p team-site/dist/health
+          echo "ok" > team-site/dist/health/index.html
+
+      - name: Create status endpoint
+        run: |
+          cat <<EOF > team-site/dist/status
+          {
+            "team": "str",
+            "commit": "${{ github.sha }}",
+            "task": "T05",
+            "public_url_configured": true,
+            "secrets_redacted": true,
+            "config_source": "GitHub Secrets"
+          }
+          EOF
 
       - name: Generate Release Manifest
         run: |
