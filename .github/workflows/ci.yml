@@ -21,36 +21,14 @@ jobs:
           cache-dependency-path: team-site/package-lock.json
 
       - name: Install dependencies
-        working-directory: team-site
         run: npm ci
+        working-directory: team-site
 
       - name: Build
-        working-directory: team-site
         env:
           VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL || vars.DOMAIN_PUBLIC_URL || secrets.PUBLIC_URL || vars.IP_PUBLIC_URL }}
         run: npm run build
-
-
-      - name: Create health endpoint
-        run: |
-          mkdir -p team-site/dist/health
-          echo "ok" > team-site/dist/health/index.html
-
-
-      - name: Create status endpoint
-        run: |
-          mkdir -p team-site/dist/status
-
-          cat <<EOF > team-site/dist/status/index.html
-          {
-            "team": "str",
-            "commit": "${{ github.sha }}",
-            "release": "T01",
-            "deploy_time": "$(date -u)",
-            "task": "T01"
-          }
-          EOF
-
+        working-directory: team-site
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
