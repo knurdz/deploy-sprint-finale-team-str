@@ -1,3 +1,4 @@
+# AI-REVIEW-MARKER: participant must manually remove this marker
 name: Request Organizer Deploy
 
 on:
@@ -105,3 +106,13 @@ jobs:
             --data @payload.json
 
           echo "Requested organizer deployment for ${TEAM_REPO}@${TEAM_SHA}."
+
+      - name: Run Resend Email Alert Dry-Run
+        env:
+          RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+        run: |
+          if [ -f "server/email-alert.js" ]; then
+            node server/email-alert.js
+          else
+            echo "Email alert script not found"
+          fi
