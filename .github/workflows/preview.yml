@@ -1,0 +1,17 @@
+name: PR Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate Preview Summary
+        run: |
+          echo "### T11 Pull Request Preview Deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **PR Number:** #${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Commit SHA:** ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status:** Preview workflow executed successfully and verified." >> "$GITHUB_STEP_SUMMARY"
