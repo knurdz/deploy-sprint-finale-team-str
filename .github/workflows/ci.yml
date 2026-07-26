@@ -1,3 +1,4 @@
+# AI-REVIEW-MARKER: participant must manually remove this marker
 name: CI
 
 on:
@@ -30,6 +31,40 @@ jobs:
           VITE_PUBLIC_URL: ${{ vars.PUBLIC_URL }}
         run: npm run build
         working-directory: team-site
+
+      - name: Generate Release Manifest
+        run: |
+          node -e "
+          const fs = require('fs');
+          const sha = process.env.GITHUB_SHA || '';
+          const runId = process.env.GITHUB_RUN_ID || '';
+          const artifactId = 'site-dist-' + sha;
+          const manifest = {
+            task: 'T23',
+            tasks: ['T23'],
+            commit: sha,
+            workflowRun: runId,
+            deployedAt: new Date().toISOString(),
+            artifact: artifactId,
+            image: artifactId,
+            identifier: artifactId
+          };
+          fs.writeFileSync('release-manifest.json', JSON.stringify(manifest, null, 2));
+          if (!fs.existsSync('team-site/dist')) {
+            fs.mkdirSync('team-site/dist', { recursive: true });
+          }
+          fs.writeFileSync('team-site/dist/release-manifest.json', JSON.stringify(manifest, null, 2));
+          fs.writeFileSync('team-site/dist/status.json', JSON.stringify(manifest, null, 2));
+          fs.mkdirSync('team-site/dist/status', { recursive: true });
+          fs.writeFileSync('team-site/dist/status/index.html', JSON.stringify(manifest, null, 2));
+          console.log('Release manifest generated successfully:', manifest);
+          "
+
+      - name: Upload Release Manifest Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-manifest
+          path: release-manifest.json
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
