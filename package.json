@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "start": "node server/index.js",
     "dev": "npm --prefix team-site run dev",
     "build": "npm --prefix team-site run build",
     "preview": "npm --prefix team-site run preview",
@@ -11,5 +12,11 @@
     "team:dev": "npm --prefix team-site run dev",
     "team:build": "npm --prefix team-site run build",
     "team:lint": "npm --prefix team-site run lint"
+  },
+  "dependencies": {
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.0",
+    "express": "^4.18.0",
+    "express-session": "^1.17.0"
   }
 }
