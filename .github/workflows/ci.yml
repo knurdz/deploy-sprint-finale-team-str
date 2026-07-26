@@ -55,8 +55,11 @@ jobs:
           }
           fs.writeFileSync('team-site/dist/release-manifest.json', JSON.stringify(manifest, null, 2));
           fs.writeFileSync('team-site/dist/status.json', JSON.stringify(manifest, null, 2));
-          fs.mkdirSync('team-site/dist/status', { recursive: true });
-          fs.writeFileSync('team-site/dist/status/index.html', JSON.stringify(manifest, null, 2));
+          if (fs.existsSync('team-site/dist/status')) {
+            let statusContent = fs.readFileSync('team-site/dist/status', 'utf8');
+            statusContent += '\n\nRelease Manifest:\n' + JSON.stringify(manifest, null, 2);
+            fs.writeFileSync('team-site/dist/status', statusContent);
+          }
           console.log('Release manifest generated successfully:', manifest);
           "
 
