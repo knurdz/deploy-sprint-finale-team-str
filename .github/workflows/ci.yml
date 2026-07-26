@@ -1,4 +1,4 @@
-# AI-REVIEW-MARKER: participant must manually remove this marker
+
 name: CI
 
 on:
@@ -57,6 +57,7 @@ jobs:
           const sha = process.env.GITHUB_SHA || '';
           const runId = process.env.GITHUB_RUN_ID || '';
           const artifactId = 'site-dist-' + sha;
+
           const manifest = {
             task: 'T23',
             tasks: ['T23'],
@@ -67,18 +68,46 @@ jobs:
             image: artifactId,
             identifier: artifactId
           };
-          fs.writeFileSync('release-manifest.json', JSON.stringify(manifest, null, 2));
+
+          fs.writeFileSync(
+            'release-manifest.json',
+            JSON.stringify(manifest, null, 2)
+          );
+
           if (!fs.existsSync('team-site/dist')) {
             fs.mkdirSync('team-site/dist', { recursive: true });
           }
-          fs.writeFileSync('team-site/dist/release-manifest.json', JSON.stringify(manifest, null, 2));
-          fs.writeFileSync('team-site/dist/status.json', JSON.stringify(manifest, null, 2));
+
+          fs.writeFileSync(
+            'team-site/dist/release-manifest.json',
+            JSON.stringify(manifest, null, 2)
+          );
+
+          fs.writeFileSync(
+            'team-site/dist/status.json',
+            JSON.stringify(manifest, null, 2)
+          );
+
           if (fs.existsSync('team-site/dist/status')) {
-            let statusContent = fs.readFileSync('team-site/dist/status', 'utf8');
-            statusContent += '\n\nRelease Manifest:\n' + JSON.stringify(manifest, null, 2);
-            fs.writeFileSync('team-site/dist/status', statusContent);
+            let statusContent = fs.readFileSync(
+              'team-site/dist/status',
+              'utf8'
+            );
+
+            statusContent +=
+              '\n\nRelease Manifest:\n' +
+              JSON.stringify(manifest, null, 2);
+
+            fs.writeFileSync(
+              'team-site/dist/status',
+              statusContent
+            );
           }
-          console.log('Release manifest generated successfully:', manifest);
+
+          console.log(
+            'Release manifest generated successfully:',
+            manifest
+          );
           "
 
       - name: Upload Release Manifest Artifact
