@@ -15,6 +15,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Validate Docker Compose Config
+        run: |
+          cp .env.example .env
+          docker compose config
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
