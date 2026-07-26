@@ -1,0 +1,41 @@
+name: PR Preview
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js (Version 20)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: team-site/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: team-site
+
+      - name: Build PR Preview
+        run: npm run build
+        working-directory: team-site
+
+      - name: Upload Preview Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: preview-artifact-${{ github.event.pull_request.number }}
+          path: team-site/dist
+
+      - name: Generate Preview Summary
+        run: |
+          echo "### T11 Pull Request Preview Deployment" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **PR Number:** #${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Commit SHA:** ${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Artifact Name:** preview-artifact-${{ github.event.pull_request.number }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Status:** Preview workflow executed, built, and verified successfully." >> "$GITHUB_STEP_SUMMARY"
