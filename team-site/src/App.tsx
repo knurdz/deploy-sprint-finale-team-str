@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Activity,
   Bell,
@@ -19,6 +20,23 @@ import { sprintStats } from './data/stats';
 import { getAverageProgress } from './utils/metrics';
 
 export function App() {
+  // AI-AGENT-MARKER: participant must manually remove this marker
+  const [authState, setAuthState] = useState<{
+    authenticated: boolean;
+    user?: { name: string; email: string; picture: string };
+  }>({ authenticated: false });
+
+  useEffect(() => {
+    fetch('/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          setAuthState({ authenticated: true, user: data.user });
+        }
+      })
+      .catch((err) => console.error('Error fetching auth state:', err));
+  }, []);
+
   const averageProgress = getAverageProgress(courses);
 
   return (
@@ -71,7 +89,53 @@ export function App() {
             <input aria-label="Search courses" placeholder="Search courses" />
           </label>
 
-          <button className="iconButton" aria-label="Notifications">
+          <div className="auth-widget" style={{ display: 'flex', alignItems: 'center', gap: '12px', marginLeft: '12px' }}>
+            {authState.authenticated && authState.user ? (
+              <>
+                <img
+                  src={authState.user.picture}
+                  alt={authState.user.name}
+                  style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+                />
+                <span style={{ fontSize: '14px', fontWeight: 500 }}>{authState.user.name}</span>
+                <a
+                  href="/auth/logout"
+                  className="logout-btn"
+                  style={{
+                    fontSize: '12px',
+                    color: '#ff4d4f',
+                    textDecoration: 'none',
+                    padding: '6px 12px',
+                    border: '1px solid #ff4d4f',
+                    borderRadius: '4px'
+                  }}
+                >
+                  Logout
+                </a>
+              </>
+            ) : (
+              <a
+                href="/auth/google"
+                className="login-btn"
+                style={{
+                  fontSize: '14px',
+                  color: '#ffffff',
+                  backgroundColor: '#4285f4',
+                  textDecoration: 'none',
+                  padding: '8px 16px',
+                  borderRadius: '4px',
+                  fontWeight: 500,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
+                Login with Google
+              </a>
+            )}
+          </div>
+
+          <button className="iconButton" aria-label="Notifications" style={{ marginLeft: '12px' }}>
             <Bell size={20} />
           </button>
         </header>
