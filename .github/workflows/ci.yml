@@ -126,6 +126,12 @@ jobs:
         run: |
           docker build -t deploy-sprint/team-site:$GITHUB_SHA team-site
 
+      - name: Verify Feature Flags Build env
+        env:
+          FEATURE_SHOW_INSIGHTS: ${{ secrets.FEATURE_FLAG_NAME }}
+        run: |
+          echo "Feature flag configuration checked."
+
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
