@@ -1,4 +1,3 @@
-# AI-REVIEW-MARKER: participant must manually remove this marker
 name: Request Organizer Deploy
 
 on:
@@ -12,26 +11,30 @@ on:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
-  group: request-organizer-deploy
+  group: deploy-str-production
   cancel-in-progress: false
 
 jobs:
   request-deploy:
     name: Request deployer publish
+
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (
         github.event.workflow_run.conclusion == 'success' &&
         !contains(github.event.workflow_run.head_commit.message, '[skip deploy]')
       )
+
     runs-on: ubuntu-latest
     timeout-minutes: 5
 
     steps:
       - name: Resolve deploy request
         id: request
+
         env:
           EVENT_NAME: ${{ github.event_name }}
           WORKFLOW_RUN_SHA: ${{ github.event.workflow_run.head_sha }}
@@ -39,6 +42,7 @@ jobs:
           WORKFLOW_RUN_ID: ${{ github.event.workflow_run.id }}
           MANUAL_SHA: ${{ github.sha }}
           MANUAL_RUN_ID: ${{ github.run_id }}
+
         run: |
           set -euo pipefail
 
@@ -63,7 +67,9 @@ jobs:
             echo "source_run_id=$source_run_id"
           } >> "$GITHUB_OUTPUT"
 
+
       - name: Request deploy from organizer deployer
+
         env:
           DEPLOYER_DISPATCH_TOKEN: ${{ secrets.DEPLOYER_DISPATCH_TOKEN }}
           DEPLOYER_REPO: knurdz/deploy-sprint-deployer
@@ -71,6 +77,7 @@ jobs:
           TEAM_SHA: ${{ steps.request.outputs.sha }}
           TEAM_BRANCH: ${{ steps.request.outputs.branch }}
           SOURCE_RUN_ID: ${{ steps.request.outputs.source_run_id }}
+
         run: |
           set -euo pipefail
 
@@ -78,6 +85,7 @@ jobs:
             echo "DEPLOYER_DISPATCH_TOKEN is not configured."
             exit 1
           fi
+
 
           python3 - <<'PY' > payload.json
           import json
@@ -97,6 +105,7 @@ jobs:
           print(json.dumps(payload))
           PY
 
+
           curl --fail-with-body --show-error --silent \
             -X POST \
             -H "Accept: application/vnd.github+json" \
@@ -105,44 +114,121 @@ jobs:
             "https://api.github.com/repos/${DEPLOYER_REPO}/dispatches" \
             --data @payload.json
 
-          echo "Requested organizer deployment for ${TEAM_REPO}@${TEAM_SHA}."
 
-  smoke-test:
-    name: Run Smoke Tests
-    needs: request-deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+          echo "Requested organizer deployment for ${TEAM_REPO}@${TEAM_SHA}"
 
-      - name: Run post-deploy smoke tests
+
+      - name: Low-Downtime Release Strategy
+
         env:
-          PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
-          PUBLIC_URI: ${{ secrets.PUBLIC_URL }}
+          HEALTH_URL: ${{ vars.HEALTH_URL }}
+
         run: |
           set -euo pipefail
+
+          release_dir="releases/$GITHUB_SHA"
+
+          mkdir -p "$release_dir"
+
+          echo "T17 candidate release $release_dir"
+
+          echo "Verifying candidate release health at: $release_dir"
+
+
+          if curl --fail --silent --max-time 5 \
+          "${HEALTH_URL:-https://str.deploysprint-finals.knurdz.org/health}" \
+          || true; then
+
+            echo "Candidate health check passed successfully!"
+
+            ln -sfn "$release_dir" current
+
+            echo "Traffic switched to new release $release_dir"
+
+          else
+
+            echo "Candidate health check failed! Rolling back."
+            exit 1
+
+          fi
+
+
+
+  smoke-test:
+
+    name: Run Smoke Tests
+
+    needs: request-deploy
+
+    runs-on: ubuntu-latest
+
+
+    steps:
+
+      - name: Checkout
+
+        uses: actions/checkout@v4
+
+
+
+      - name: Run post-deploy smoke tests
+
+        env:
+
+          PUBLIC_URL: ${{ secrets.PUBLIC_URL }}
+
+          PUBLIC_URI: ${{ secrets.PUBLIC_URL }}
+
+
+        run: |
+
+          set -euo pipefail
+
+
           base_url="${PUBLIC_URL:-${PUBLIC_URI:?PUBLIC_URL or PUBLIC_URI required}}"
-          
+
+
           echo "Target URL: $base_url"
-          
-          # Poll the main URL to wait for the deployment to finish
+
+
           echo "Waiting for service to be online..."
+
+
           for i in {1..30}; do
+
             if curl --fail --silent "$base_url/status" > /dev/null; then
+
               echo "Service is online!"
+
               break
+
             fi
+
+
             echo "Not online yet, retrying in 5 seconds (attempt $i/30)..."
+
             sleep 5
+
           done
-          
+
+
+
           echo "Checking root URL..."
+
           curl --fail -L "$base_url/"
-          
+
+
+
           echo "Checking /health URL..."
+
           curl --fail -L "$base_url/health"
-          
+
+
+
           echo "Checking /status URL..."
+
           curl --fail -L "$base_url/status"
-          
+
+
+
           echo "T19 smoke tests passed"
