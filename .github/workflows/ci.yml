@@ -126,6 +126,10 @@ jobs:
         run: |
           docker build -t deploy-sprint/team-site:$GITHUB_SHA team-site
 
+      - name: Build production Docker image
+        run: |
+          docker build -t deploy-sprint/str:${{ github.sha }} team-site
+
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
