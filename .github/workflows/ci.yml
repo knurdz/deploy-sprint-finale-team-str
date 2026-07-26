@@ -38,9 +38,7 @@ jobs:
 
       - name: Create status endpoint
         run: |
-          mkdir -p team-site/dist/status
-
-          cat <<EOF > team-site/dist/status/index.html
+          cat <<EOF > team-site/dist/status
           {
             "team": "str",
             "commit": "${{ github.sha }}",
